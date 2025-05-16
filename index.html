@@ -564,11 +564,11 @@
 
         <section id='model-demo'>
             <div style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem;">
-                <button id="tts-btn" class="demo-switch-btn" onclick="showDemo('tts')">Human-like TTS Demos</button>
-                <button id="asr-btn" class="demo-switch-btn active" onclick="showDemo('asr')">Paralinguistic-Aware ASR
+                <button id="tts-btn" class="demo-switch-btn active" onclick="showDemo('tts')">Human-like TTS Demos</button>
+                <button id="asr-btn" class="demo-switch-btn" onclick="showDemo('asr')">Paralinguistic-Aware ASR
                     Demos</button>
             </div>
-            <div id="tts-demo" class="demo-panel" style="display:none;">
+            <div id="tts-demo" class="demo-panel" style="display:block;">
                 <h2 class='section-title'>TTS Performance After fintuned by NVspeech</h2>
                 <table>
                     <thead>
@@ -1056,7 +1056,7 @@
                     </tbody>
                 </table>
             </div>
-            <div id="asr-demo" class="demo-panel" style="display:block;">
+            <div id="asr-demo" class="demo-panel" style="display:none;">
                 <h2 class="section-title">Paralinguistic-Aware ASR Results</h2>
                 <table>
                     <thead>
