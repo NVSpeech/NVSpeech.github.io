@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>NVspeech</title>
+    <style>
+        :root {
+            --primary-color: #5b20b4bf;
+            --text-color: #333;
+            --border-color: #e0e0e0;
+            --background-color: #ffffff;
+            --card-background: #f8f9fa;
+            --highlight-color: #f0f7ff;
+            --section-spacing: 4rem;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        body,
+        * {
+            /* 默认英文为 Times New Roman，中文为楷体 */
+            font-family: 'Times New Roman', Times, serif, 'Kaiti', '楷体', 'STKaiti', 'KaiTi_GB2312', serif;
+        }
+
+        /* 强制中文为楷体 */
+        :lang(zh),
+        .zh,
+        [lang="zh"],
+        [lang^="zh-"] {
+            font-family: 'Kaiti', '楷体', 'STKaiti', 'KaiTi_GB2312', 'Times New Roman', Times, serif !important;
+        }
+
+        /* 强制英文为 Times New Roman */
+        :lang(en),
+        .en,
+        [lang="en"],
+        [lang^="en-"] {
+            font-family: 'Times New Roman', Times, serif !important;
+        }
+
+        body {
+            line-height: 1.5;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 2rem 0;
+            margin: 0 auto;
+        }
+
+        .container {
+            width: 98%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        section {
+            margin-bottom: var(--section-spacing);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .paper-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .abstract-header {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--text-color);
+            text-align: center;
+            margin: 2rem 0 1.5rem;
+        }
+
+        .abstract {
+            max-width: 900px;
+            margin: 0 auto 2rem;
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #444;
+            text-align: center;
+            padding: 0 1rem;
+        }
+
+        .abstract p {
+            margin-bottom: 1rem;
+        }
+
+        .abstract strong {
+            color: var(--text-color);
+        }
+
+        .abstract em {
+            font-style: italic;
+        }
+
+        .dataset-section {
+            margin-bottom: var(--section-spacing);
+        }
+
+        .dataset-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dataset-tab {
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin: 0 1rem;
+        }
+
+        .dataset-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .dataset-content {
+            display: none;
+        }
+
+        .dataset-content.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--background-color);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            table-layout: fixed;
+            margin-bottom: 2rem;
+        }
+
+        th,
+        td {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        th {
+            background-color: var(--card-background);
+            font-weight: 600;
+            color: var(--text-color);
+            padding: 1rem 0.5rem;
+            white-space: nowrap;
+        }
+
+        td {
+            vertical-align: middle;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .model-ours {
+            font-weight: 700;
+            color: var(--primary-color);
+            position: relative;
+        }
+
+        .model-ours::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 15%;
+            width: 70%;
+            height: 2px;
+            background-color: var(--primary-color);
+            opacity: 0.5;
+        }
+
+        td.model-ours-cell {
+            background-color: var(--highlight-color);
+        }
+
+        .description-cell {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            padding: 0.8rem 0.5rem;
+        }
+
+        .text-cell {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            padding: 0.8rem 0.5rem;
+        }
+
+        .style-tag {
+            border-bottom: 1px solid var(--primary-color);
+            opacity: 0.9;
+        }
+
+        audio {
+            width: 150px;
+            margin: 0.3rem 0;
+        }
+
+        audio::-webkit-media-controls-panel {
+            background-color: var(--card-background);
+        }
+
+        @media (max-width: 1200px) {
+            body {
+                padding: 0.8rem 0;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            th,
+            td {
+                min-width: 150px;
+            }
+        }
+
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            padding: 0.5rem;
+        }
+
+        .tag {
+            background-color: var(--highlight-color);
+            color: var(--primary-color);
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .basic-tag {
+            background-color: #f5f5f5;
+            color: #666;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .dataset-table td {
+            vertical-align: middle;
+            padding: 1rem 0.5rem;
+        }
+
+        .dataset-table audio {
+            width: 180px;
+        }
+
+        .disclaimer {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 0 1rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .disclaimer p {
+            font-size: 0.9rem;
+            color: #666;
+            font-style: italic;
+        }
+
+        .disclaimer-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: normal;
+        }
+
+        .disclaimer-link:hover {
+            text-decoration: underline;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 3rem 0;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .nav-tab {
+            color: #666;
+            text-decoration: none;
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .nav-tab:hover {
+            color: var(--primary-color);
+            background-color: var(--highlight-color);
+        }
+
+        .demo-intro {
+            max-width: 900px;
+            margin: 0 auto 3rem;
+            text-align: center;
+            padding: 0 1rem;
+        }
+
+        .demo-intro p {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: #444;
+        }
+
+        .subtitle {
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto 2rem;
+            color: #444;
+            padding: 0 1rem;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .model-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .model-tab {
+            padding: 0.8rem 2rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin: 0 1rem;
+        }
+
+        .model-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+
+        .model-content {
+            display: none;
+        }
+
+        .model-content.active {
+            display: block;
+        }
+
+        .abstract,
+        .abstract-header {
+            font-size: 2.2rem !important;
+            color: #000 !important;
+        }
+
+        .figure-caption {
+            max-width: 900px;
+            text-align: center;
+            color: #000;
+            font-size: 1.15rem;
+            margin: 0 auto 1.5rem auto;
+            font-weight: 500;
+        }
+
+        .tag-nvv {
+            display: inline-block;
+            background: #e3fbe3;
+            color: #218838;
+            border-radius: 5px;
+            padding: 0.2em 0.7em;
+            margin: 0.1em 0;
+            font-size: 1em;
+            font-weight: bold;
+            border: 1px solid #b2e5b2;
+            min-width: 90px;
+        }
+
+        .tag-prosody {
+            display: inline-block;
+            background: #f0e6ff;
+            color: #7c3aed;
+            border-radius: 5px;
+            padding: 0.2em 0.7em;
+            margin: 0.1em 0;
+            font-size: 1em;
+            font-weight: bold;
+            border: 1px solid #d1c4e9;
+            min-width: 90px;
+        }
+
+        .tag-discourse {
+            display: inline-block;
+            background: #fffbe6;
+            color: #b59f00;
+            border-radius: 5px;
+            padding: 0.2em 0.7em;
+            margin: 0.1em 0;
+            font-size: 1em;
+            font-weight: bold;
+            border: 1px solid #f7e7a1;
+            min-width: 90px;
+        }
+
+        .tag-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.1em;
+        }
+    </style>
+</head>
+
+<body>
+    <div class='container'>
+        <section>
+            <h1 class='paper-title'>NVSpeech: Word-level Annotated Speech Dataset with
+                Non-verbal Vocalization for Human-like Synthesis</h1>
+            <div style="display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 2.5rem;">
+                <span href="https://arxiv.org/" target="_blank" rel="noopener"
+                    style="display: flex; align-items: center; gap: 0.5rem; background: #e6dbfa; color: #5b20b4; border: none; border-radius: 6px; padding: 0.7rem 1.6rem; font-size: 1rem; font-weight: 600; text-decoration: none; box-shadow: 0 1px 4px rgba(91,32,180,0.07); transition: background 0.2s;">
+                    <svg width="20" height="20" fill="none" viewBox="0 0 20 20" style="vertical-align: middle;">
+                        <rect x="3" y="3" width="14" height="14" rx="2.5" stroke="#5b20b4" stroke-width="1.5" />
+                        <path d="M7 7h6v6H7z" fill="#5b20b4" fill-opacity="0.18" />
+                    </svg>
+                    Paper
+                </span>
+                <span href="https://nvspeech.github.io/" target="_blank" rel="noopener"
+                    style="display: flex; align-items: center; gap: 0.5rem; background: #e6dbfa; color: #5b20b4; border: none; border-radius: 6px; padding: 0.7rem 1.6rem; font-size: 1rem; font-weight: 600; text-decoration: none; box-shadow: 0 1px 4px rgba(91,32,180,0.07); transition: background 0.2s;">
+                    <svg width="20" height="20" fill="none" viewBox="0 0 20 20" style="vertical-align: middle;">
+                        <path fill="#5b20b4" fill-opacity="0.18"
+                            d="M10 2C5.03 2 1 6.03 1 11c0 3.98 2.61 7.34 6.22 8.53.45.08.62-.2.62-.44 0-.22-.01-.8-.01-1.57-2.53.55-3.07-1.22-3.07-1.22-.41-1.04-1-1.32-1-1.32-.82-.56.06-.55.06-.55.91.06 1.39.94 1.39.94.8 1.38 2.09.98 2.6.75.08-.58.31-.98.56-1.2-2.02-.23-4.15-1.01-4.15-4.48 0-.99.36-1.8.94-2.43-.09-.23-.41-1.16.09-2.41 0 0 .76-.24 2.5.92A8.7 8.7 0 0 1 10 6.8c.77.004 1.54.104 2.26.304 1.74-1.16 2.5-.92 2.5-.92.5 1.25.18 2.18.09 2.41.59.63.94 1.44.94 2.43 0 3.48-2.13 4.25-4.16 4.48.32.28.6.83.6 1.67 0 1.2-.01 2.17-.01 2.47 0 .24.17.53.62.44C16.39 18.34 19 14.98 19 11c0-4.97-4.03-9-9-9Z" />
+                    </svg>
+                    Github
+                </span>
+                <a href="https://huggingface.co/datasets/Hannie0813/NVSpeech260k" target="_blank" rel="noopener"
+                    style="display: flex; align-items: center; gap: 0.5rem; background: #e6dbfa; color: #5b20b4; border: none; border-radius: 6px; padding: 0.7rem 1.6rem; font-size: 1rem; font-weight: 600; text-decoration: none; box-shadow: 0 1px 4px rgba(91,32,180,0.07); transition: background 0.2s;">
+                    <svg width="20" height="20" fill="none" viewBox="0 0 20 20" style="vertical-align: middle;">
+                        <text x="3" y="8" font-size="5" fill="#5b20b4" font-family="monospace">10101</text>
+                        <text x="5" y="13" font-size="5" fill="#5b20b4" font-family="monospace">01010</text>
+                        <text x="3" y="18" font-size="5" fill="#5b20b4" font-family="monospace">10101</text>
+                    </svg>
+                    Dataset
+                </a>
+            </div>
+            <h2 class="abstract-header">Abstract</h2>
+            <p>
+                Non-verbal vocalizations (NVVs)—such as laughter, breathing, and interjections like “uhm” and “oh”—are
+                essential
+                components of natural spoken communication. They enhance the realism, expressivity, and social
+                appropriateness of
+                speech, yet remain largely overlooked in conventional ASR and TTS systems. To bridge this gap, we
+                introduce
+                <strong>NVSpeech</strong>, the largest word-level annotated dataset to date that explicitly captures
+                both lexical
+                content and <span style="font-size:1.25em;font-style:italic;text-decoration:underline;">18</span>
+                categories of para-linguistic expressions, collected entirely from real-world,
+                human-spoken audio.
+            </p>
+            <p>The construction and application of <strong>NVSpeech</strong> proceed in three stages:</p>
+            <ol>
+                <li>
+                    We manually annotate <span
+                        style="font-size:1.25em;font-style:italic;text-decoration:underline;">48,430</span> utterances
+                    with word-level aligned NVV tags, covering diverse speech
+                    scenarios with
+                    high inter-annotator consistency.
+                </li>
+                <li>
+                    Using this subset, we develop the first <em>paralinguistic-aware ASR model</em>, which extends
+                    conventional ASR
+                    by incorporating inline NVV markers (e.g., “You’re so funny&lt;laughter&gt;”), treated as special
+                    decoding
+                    tokens. This model is then used to automatically label a large-scale speech corpus, producing the
+                    full NVSpeech
+                    dataset comprising <span
+                        style="font-size:1.25em;font-style:italic;text-decoration:underline;">265,888</span> utterances
+                    and <span style="font-size:1.25em;font-style:italic;text-decoration:underline;">775</span> hours of
+                    aligned audio.
+                </li>
+                <li>
+                    To validate the effectiveness of NVSpeech, we fine-tune a zero-shot TTS model on both human- and
+                    auto-labeled
+                    data. The model enables explicit NVV insertion at arbitrary token positions, achieving controllable
+                    and
+                    human-like synthesis beyond traditional TTS capabilities.
+                </li>
+            </ol>
+            <p>
+                By unifying recognition and generation of para-linguistic cues, <strong>NVSpeech</strong> provides the
+                first
+                scalable foundation for expressive speech modeling at both lexical and non-verbal levels.<br>
+
+            </p>
+
+            <div style="margin: 2rem 0 4rem 0;">
+                <img src="moti_para.png" alt="Figure 1" style="display:block;max-width:100%;height:auto;">
+                <div class="figure-caption" style="max-width:100%;margin:0 auto 1.5rem auto;">
+                    <strong>Figure 1.</strong> The gap between conventional speech processing systems and NVV-aware
+                    modeling. (a)
+                    Common speech datasets omit non-verbal vocalizations (NVVs), while NVSpeech provides explicit
+                    word-level NVV annotations. (b) Conventional ASR ignores NVVs; our NVV-aware ASR transcribes
+                    both lexical and paralinguistic content. (c) Standard TTS generates only text, while our model
+                    enables
+                    controllable NVV synthesis for more human-like speech.
+                </div>
+            </div>
+            <div style="margin: 2rem 0 0 0;">
+                <img src="asr-plus.png" alt="Figure 2" style="display:block;max-width:100%;height:auto;">
+                <div class="figure-caption" style="max-width:100%;margin:0 auto 1.5rem auto;">
+                    <strong>Figure 2.</strong> Overview of our paralinguistic-aware speech recognition and generation
+                    pipeline. (1)
+                    A word-level human annotated dataset of verbal and non-verbal vocalizations is first constructed.
+                    (2) A
+                    paralinguistic-aware ASR model is trained to jointly transcribe verbal and non-verbal content. (3)
+                    This model is used to automatically annotate large-scale unlabeled speech. (4) The expanded dataset
+                    enables training a controllable and expressive TTS system that explicitly renders paralinguistic
+                    cues.
+                </div>
+            </div>
+        </section>
+
+        <section id='model-demo'>
+            <div style="display: flex; justify-content: center; gap: 2rem; margin-bottom: 2rem;">
+                <button id="tts-btn" class="demo-switch-btn" onclick="showDemo('tts')">Human-like TTS Demos</button>
+                <button id="asr-btn" class="demo-switch-btn active" onclick="showDemo('asr')">Paralinguistic-Aware ASR
+                    Demos</button>
+            </div>
+            <div id="tts-demo" class="demo-panel" style="display:none;">
+                <h2 class='section-title'>TTS Performance After fintuned by NVspeech</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="font-size:1.3rem;font-weight:bold;">Paralinguistic Tags</th>
+                            <th style="font-size:1.3rem;font-weight:bold;">CosyVoice2 TTS Demos</th>
+                            <th style="font-size:1.3rem;font-weight:bold;">Ints TTS Demos</th>
+                            <th style="font-size:1.3rem;font-weight:bold;">Chinese Subtitles</th>
+                            <th style="font-size:1.3rem;font-weight:bold;">Translations</th>
+                        </tr>
+                        <tr>
+                            <td colspan="5" style="padding-bottom:0.5em;">
+                                <div style="display:flex;justify-content:center;gap:1.5em;text-align:center;">
+                                    <span class="tag-nvv" style="text-align:center;">Non-verbal vocalizations</span>
+                                    <span class="tag-prosody" style="text-align:center;">Prosodic/Attitudinal
+                                        cues</span>
+                                    <span class="tag-discourse" style="text-align:center;">Discourse-like markers</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-nvv">&lt;Breathing&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/0.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/0.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">还需要&lt;Breathing&gt;…调整。
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">Still need
+                                &lt;Breathing&gt;... adjustment</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Confirmation-en&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/1.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/1.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Confirmation-en&gt;，我记得这个——你在露营手册上也是这么写的：露营地必须平整干燥、背风背阴，最好是地势较高的地方……
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">
+                                &lt;Confirmation-en&gt;, I remember this—you wrote the same in the camping manual: the
+                                campsite must be flat, dry, sheltered from wind and sun, and preferably at a higher
+                                place...</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Surprise-oh&gt;</span>
+                                    <span class="tag-nvv">&lt;Breathing&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/2.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/2.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Surprise-oh&gt;我设计了一种解码程序，看——虽然长得像个相机&lt;Breathing&gt;，但这其实是个探测仪&lt;Breathing&gt;。透过它，我们就能看到一些被隐藏起来的痕迹。
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">
+                                &lt;Surprise-oh&gt; I designed a decoding program, look—although it looks like a camera
+                                &lt;Breathing&gt;, it's actually a detector &lt;Breathing&gt;. Through it, we can see
+                                some
+                                hidden traces.</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Dissatisfaction-hnn&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/15.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/15.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Dissatisfaction-hnn&gt;自己的朋友麻烦你亲自招待。
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">
+                                &lt;Dissatisfaction-hnn&gt; Please entertain your own friends yourself.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Emm&gt;</span>
+                                    <span class="tag-nvv">&lt;Breathing&gt;</span>
+                                    <span class="tag-nvv">&lt;Sigh&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/20.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/20.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Emm&gt;你平时只吃这些吗？&lt;Breathing&gt;&lt;Sigh&gt;，我的通心粉分你一些好了。
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">&lt;Emm&gt; Do
+                                you usually only eat these? &lt;Breathing&gt;&lt;Sigh&gt;, I'll share some of my
+                                macaroni
+                                with you.</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-nvv">&lt;Laugh&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/39.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/39.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                既然是你亲手做的，我就尝尝看吧，呵呵…&lt;Laugh&gt;</td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">Since you made
+                                it yourself, I'll give it a try, hehe... &lt;Laugh&gt;</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Surprise-ah&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/52.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/52.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Surprise-ah&gt;…这次不是。正好是休息时间，想跟大家聊聊天。
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">
+                                &lt;Surprise-ah&gt; ...Not this time. It's just break time, I wanted to chat with
+                                everyone.</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Question-oh&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/60.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/60.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Question-oh&gt; 如此说来，你们安排了不止一队人在外盗取烟花，是吗？
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">So, you arranged
+                                more than one team to steal fireworks outside, right?</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-nvv">&lt;Sigh&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/123.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/123.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">&lt;Sigh&gt;…咱就不该相信业余摄影师……
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">&lt;Sigh&gt;
+                                ...We really shouldn't have trusted the amateur photographer...</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Surprise-yo&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/147.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/147.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                浇花时…&lt;Surprise-yo&gt;…喷壶喷出彩虹色水雾</td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">When watering
+                                flowers... &lt;Surprise-yo&gt;... the watering can sprays rainbow-colored mist</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Question-ei&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/156.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/156.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                教育援助&lt;Question-ei&gt;那你一定很熟悉这附近的情况？
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">Education aid
+                                &lt;Question-ei&gt; Then you must be familiar with the situation around here?</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-nvv">&lt;Breathing&gt;</span>
+                                    <span class="tag-discourse">&lt;Shh&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/165.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/165.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                空气流速异常降低&lt;Breathing&gt;…&lt;Shh&gt;…可能触发微粒分析
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">Abnormal
+                                decrease in air flow &lt;Breathing&gt;...&lt;Shh&gt;... may trigger particle analysis
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Emm&gt;</span>
+                                    <span class="tag-nvv">&lt;Breathing&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/168.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/168.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Emm&gt;…比如，&lt;Breathing&gt;临近保质期的食材，只要采用合适的烹饪方式加工熟透，就能吃到性价比很高的一餐。
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">
+                                &lt;Emm&gt;...For example, &lt;Breathing&gt; ingredients near their expiration date, as
+                                long as they are cooked properly, can make a cost-effective meal.</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Question-en&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/173.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/173.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                你是否已经和供应商确认了交货时间，&lt;Question-en&gt;?
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">Have you
+                                confirmed the delivery time with the supplier, &lt;Question-en&gt;?</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-nvv">&lt;Breathing&gt;</span>
+                                    <span class="tag-nvv">&lt;Cry&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/276.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/276.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                怎么&lt;Breathing&gt;…怎么会&lt;Breathing&gt;…&lt;Cry&gt;…
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">How
+                                &lt;Breathing&gt;... how could it be &lt;Breathing&gt;... &lt;Cry&gt;...</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-discourse">&lt;Shh&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/284.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/284.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                天花板夹层检测到振动频率异常&lt;Shh&gt;……</td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">Abnormal
+                                vibration frequency detected in the ceiling interlayer &lt;Shh&gt;...</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Dissatisfaction-hnn&gt;</span>
+                                    <span class="tag-nvv">&lt;Breathing&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/340.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/340.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Dissatisfaction-hnn&gt;看上去很强的样子啊，&lt;Breathing&gt;等我伤好了，我们可以切磋切磋。
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">
+                                &lt;Dissatisfaction-hnn&gt; Looks strong, &lt;Breathing&gt; when I'm healed, we can
+                                spar.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Question-yi&gt;</span>
+                                    <span class="tag-nvv">&lt;Breathing&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/366.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/366.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Question-yi&gt;&lt;Breathing&gt;，优菈？你不是在带新人吗？
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">
+                                &lt;Question-yi&gt;&lt;Breathing&gt;, Eula? Aren't you guiding the newcomers?
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Surprise-wa&gt;</span>
+                                    <span class="tag-nvv">&lt;Breathing&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/494.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/494.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Surprise-wa&gt;&lt;Breathing&gt;，厨具这么齐全的话，就能做很多好吃的呢！
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">
+                                &lt;Surprise-wa&gt;&lt;Breathing&gt;, with such complete kitchenware, you can make a lot
+                                of
+                                delicious food!
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-nvv">&lt;Cough&gt;</span>
+                                    <span class="tag-nvv">&lt;Breathing&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ttsaudio/350.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="ints/350.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Cough&gt;，&lt;Breathing&gt;不必这么丧气，乐平波琳小姐，我有一个提议。
+                            </td>
+                            <td style="font-size:1.25rem; font-family:'Times New Roman', Times, serif;">&lt;Cough&gt;,
+                                &lt;Breathing&gt; Don't be so discouraged, Miss Clementine, I have a proposal.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="asr-demo" class="demo-panel" style="display:block;">
+                <h2 class="section-title">Paralinguistic-Aware ASR Results</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="font-size:1.3rem;font-weight:bold;">Paralinguistic Tags</th>
+                            <th style="font-size:1.3rem;font-weight:bold;">ASR Audio Demos</th>
+                            <th style="font-size:1.3rem;font-weight:bold;">Chinese Transcription</th>
+                            <th style="font-size:1.3rem;font-weight:bold;">English Translations</th>
+                        </tr>
+                        <tr>
+                            <td colspan="4" style="padding-bottom:0.5em;text-align:center;">
+                                <div style="display:flex;justify-content:center;gap:1.5em;">
+                                    <span class="tag-nvv" style="text-align:center;">Non-verbal vocalizations</span>
+                                    <span class="tag-prosody" style="text-align:center;">Prosodic/Attitudinal
+                                        cues</span>
+                                    <span class="tag-discourse" style="text-align:center;">Discourse-like markers</span>
+                                </div>
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-nvv">&lt;Breathing&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="asraudio\260000.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'SimSun', '宋体', serif;">
+                                我们在那里设置了陷阱吗？设置了埋伏，就是这个夜晚了，孩子们…&lt;Breathing&gt;
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'Consolas', monospace;">
+                                Did we set a trap there? We laid an ambush—it’s this night, children…&lt;Breathing&gt;
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Confirmation-en&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="asraudio\260001.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'SimSun', '宋体', serif;">
+                                什么，你喝不完，我能跟你一起喝吗？我跟你讲，我一个人能喝完一瓶啊…&lt;Confirmation-en&gt;。
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'Consolas', monospace;">
+                                What, you can’t finish it? Can I drink with you? I’ll tell you, I can finish a bottle on
+                                my
+                                own…&lt;Confirmation-en&gt;.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Question-ei&gt;</span>
+                                    <span class="tag-nvv">&lt;Laughter&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="asraudio\260002.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Question-ei&gt;？前面有一个吃饭的地方，我先进去吃吃看，也许柴犬小姐丢失的就是勺子或者碗筷，她不好意思说是吃饭的家伙，&lt;Laughter&gt;。
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'Consolas', monospace;">
+                                &lt;Question-ei&gt;? There’s a restaurant ahead; I’ll go in and see—perhaps Miss Shiba
+                                Inu lost her spoon or
+                                chopsticks and was too embarrassed to admit it,&lt;Laughter&gt;.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Surprise-yo&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="asraudio\260004.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Surprise-yo&gt;，这二小姐走了一遭回来都不会行礼啦。
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'Consolas', monospace;">
+                                &lt;Surprise-yo&gt;, Miss Second returned from her trip and still doesn’t know how to
+                                bow.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Surprise-oh&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="asraudio\260010.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Surprise-oh&gt;我这个，我这个麦克风有时候就是这样，它指向性蛮强的。有的时候比如说「丘丘或者牙在旁边说话，比较小声的时候就收不到。
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'Consolas', monospace;">
+                                &lt;Surprise-oh&gt;, this microphone of mine sometimes acts up—it’s very directional.
+                                When Qiqi or Yan speak
+                                quietly nearby, it just won’t pick up.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-nvv">&lt;Sigh&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="asraudio\260011.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'SimSun', '宋体', serif;">
+                                你是否想念我，还是只和寂寞做朋友？装什么乱七八糟的呀，还不就是那点事。&lt;Sigh&gt;，趁年轻干点正事吧，小心老了，连个买文子的钱都没有，不如去上学吧，和你安全阿姨学学如何飞行。
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'Consolas', monospace;">
+                                Do you miss me, or are you just befriending loneliness? What nonsense—it’s really
+                                nothing. &lt;Sigh&gt;, while
+                                you’re young do something meaningful; watch out that when you’re old, you won’t even
+                                have money to buy a scroll.
+                                You might as well go to school and learn to fly from your secure aunt.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Surprise-ah&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="asraudio\260012.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'SimSun', '宋体', serif;">
+                                &lt;Surprise-ah&gt;妹妹爱怎么着就怎么着，需要什么，只管拿这个去取，也不必问我。
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'Consolas', monospace;">
+                                &lt;Surprise-ah&gt;, however my sister wants it, she can have it—just take what you need
+                                and don’t ask me.
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;">
+                                <div class="tag-stack" style="align-items:center;">
+                                    <span class="tag-prosody">&lt;Surprise-oh&gt;</span>
+                                </div>
+                            </td>
+                            <td>
+                                <audio controls>
+                                    <source src="asraudio\260014.wav" type="audio/wav">
+                                </audio>
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'SimSun', '宋体', serif;">
+                                四阿哥单独问甄鹮，皇阿玛是不是不喜欢她？甄鹮当然不能说实话了，肯定不能说，&lt;Surprise-oh&gt;你爹就是不喜欢你，大家都忌讳你。
+                            </td>
+                            <td style="font-size:1.1rem; font-family:'Consolas', monospace;">
+                                Fourth Prince privately asked Zhenyuan if His Majesty disliked her? Of course she
+                                couldn’t speak the truth—it’s
+                                definitely unspeakable: &lt;Surprise-oh&gt;, “Your father simply doesn’t like you;
+                                everyone avoids you.”
+                            </td>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <style>
+            .demo-switch-btn {
+                background: #5b20b4;
+                color: #fff;
+                border: none;
+                border-radius: 6px;
+                padding: 0.7rem 2rem;
+                font-size: 1.1rem;
+                font-weight: 600;
+                cursor: pointer;
+                box-shadow: 0 1px 4px rgba(91, 32, 180, 0.07);
+                transition: background 0.2s, color 0.2s;
+                outline: none;
+            }
+
+            .demo-switch-btn:not(.active) {
+                background: #e6dbfa;
+                color: #5b20b4;
+            }
+
+            .demo-switch-btn.active {
+                background: #5b20b4;
+                color: #fff;
+                border: 2px solid #5b20b4;
+            }
+        </style>
+        <script>
+            function showDemo(type) {
+                document.getElementById('tts-demo').style.display = type === 'tts' ? '' : 'none';
+                document.getElementById('asr-demo').style.display = type === 'asr' ? '' : 'none';
+                document.getElementById('tts-btn').classList.toggle('active', type === 'tts');
+                document.getElementById('asr-btn').classList.toggle('active', type === 'asr');
+            }
+        </script>
+
+        <script>
+            function switchDatasetTab(tabName) {
+                // Hide all content
+                document.querySelectorAll('.dataset-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                // Deactivate all tabs
+                document.querySelectorAll('.dataset-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+
+                // Show selected content and activate tab
+                document.getElementById(tabName + '-content').classList.add('active');
+                document.getElementById(tabName + '-tab').classList.add('active');
+            }
+
+            function switchModelTab(tabName) {
+                // Hide all content
+                document.querySelectorAll('.model-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+
+                // Deactivate all tabs
+                document.querySelectorAll('.model-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+
+                // Show selected content and activate tab
+                document.getElementById(tabName + '-content').classList.add('active');
+                document.getElementById(tabName + '-tab').classList.add('active');
+            }
+
+            // Ensure only one audio plays at a time
+            document.addEventListener('DOMContentLoaded', function () {
+                const audios = document.querySelectorAll('audio');
+                audios.forEach(audio => {
+                    audio.addEventListener('play', function () {
+                        audios.forEach(a => {
+                            if (a !== audio) a.pause();
+                        });
+                    });
+                });
+            });
+        </script>
+    </div>
+</body>
+
+</html>
