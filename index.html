@@ -601,9 +601,9 @@
             <p>
                 Paralinguistic vocalizations—including non-verbal sounds like laughter and breathing, as well as lexicalized interjections such as “uhm” and “oh”—are integral to natural spoken communication. Despite their importance in conveying affect, intent, and interactional cues, such cues remain largely overlooked in conventional automatic speech recognition (ASR) and text-to-speech (TTS) systems.
 We present <strong>NVSpeech</strong>, an integrated and scalable pipeline that bridges the recognition and synthesis of paralinguistic vocalizations, encompassing dataset construction, ASR modeling, and controllable TTS.
-%a unified framework that bridges recognition and synthesis of paralinguistic vocalizations through an integrated pipeline encompassing dataset creation, ASR modeling, and controllable TTS.
-<strong>(1)</strong> We introduce a manually annotated dataset of 48,430 human-spoken utterances with 18 word-level paralinguistic categories.
-<strong>(2)</strong> We develop the <i>paralinguistic-aware ASR model</i>, which treats paralinguistic cues as inline decodable tokens (e.g., “You’re so funny [Laughter]”), enabling joint lexical and non-verbal transcription. This model is then used to automatically annotate a large corpus, the first large-scale Chinese dataset of 174,179 utterances (573 hours) with word-level alignment and paralingustic cues.
+
+<strong>(1)</strong> We introduce a manually annotated dataset of <u>48,430</u> human-spoken utterances with 18 word-level paralinguistic categories.
+<strong>(2)</strong> We develop the <i>paralinguistic-aware ASR model</i>, which treats paralinguistic cues as inline decodable tokens (e.g., “You’re so funny [Laughter]”), enabling joint lexical and non-verbal transcription. This model is then used to automatically annotate a large corpus, the first large-scale Chinese dataset of <u>174,179</u> utterances (<u>573</u> hours) with word-level alignment and paralingustic cues.
 <strong>(3)</strong> We finetune zero-shot TTS models on both human- and auto-labeled data to enable explicit control over paralinguistic vocalizations, allowing context-aware insertion at arbitrary token positions for human-like speech synthesis.
 By unifying the recognition and generation of paralinguistic vocalizations, <strong>NVSpeech</strong> offers the first open, large-scale, word-level annotated pipeline for expressive speech modeling in Mandarin, integrating recognition and synthesis in a scalable and controllable manner.
 
